@@ -114,4 +114,13 @@ class VetControllerTests {
 			.andExpect(content().string(expected));
 	}
 
+	@Test
+	void showResourcesVetListHasOnlyVetListKey() throws Exception {
+		mockMvc.perform(get("/vets").accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.length()").value(1))
+			.andExpect(jsonPath("$.vetList").isArray())
+			.andExpect(jsonPath("$.vetList.length()").value(2));
+	}
+
 }
