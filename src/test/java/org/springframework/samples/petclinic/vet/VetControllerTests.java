@@ -97,4 +97,21 @@ class VetControllerTests {
 			.andExpect(jsonPath("$.vetList[0].id").value(1));
 	}
 
+	@Test
+	void showResourcesVetListJsonContract() throws Exception {
+		// Exact, order-sensitive wire format: Vet keys are id, firstName, lastName,
+		// specialties, nrOfSpecialties, new; Specialty keys are id, name, new.
+		// Guards against Jackson 3's alphabetical property sorting reordering the
+		// payload.
+		String expected = "{\"vetList\":["
+				+ "{\"id\":1,\"firstName\":\"James\",\"lastName\":\"Carter\",\"specialties\":[],\"nrOfSpecialties\":0,\"new\":false},"
+				+ "{\"id\":2,\"firstName\":\"Helen\",\"lastName\":\"Leary\","
+				+ "\"specialties\":[{\"id\":1,\"name\":\"radiology\",\"new\":false}],\"nrOfSpecialties\":1,\"new\":false}"
+				+ "]}";
+		mockMvc.perform(get("/vets").accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(content().string(expected));
+	}
+
 }
